@@ -14,21 +14,23 @@ int main(int argc, char **argv) {
 	int grid_size = 1;
 	int gpu_num;
 
+	unsigned long int bytes = 8e9; // size of memory to occupy
+	float* data;
+
 	cudaGetDeviceCount(&gpu_num);
 	if (argc > 1) {
 		for (int i = 1; i < argc; i++) {
 			cudaSetDevice(atoi(argv[i]));
+			cudaMalloc((void**)&data, bytes);
 			kernel<<<grid_size, block_size>>>();
 		}
 	}
 	else {
 		for (int i = 0; i < gpu_num; i++) {
 			cudaSetDevice(i);
+			cudaMalloc((void**)&data, bytes);
 			kernel<<<grid_size, block_size>>>();
 		}
-	}
-	if (argc > 1) {
-		grid_size = atoi(argv[1]);
 	}
 	
 	cudaDeviceSynchronize();
